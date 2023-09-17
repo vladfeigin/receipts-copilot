@@ -9,9 +9,13 @@ from msrest.authentication import CognitiveServicesCredentials
 from dotenv import load_dotenv
 import openai
 
+import logging
+
 #Flask application name
 app = Flask(__name__)
 
+logging.basicConfig(filename='applog.log', level=logging.INFO)
+load_dotenv()
 
 #computer vision configuration
 COMPUTER_VISION_ENDPOINT = os.getenv("COMPUTER_VISION_ENDPOINT")
@@ -45,11 +49,11 @@ More specifically is should contain the following information:
 If some of the information is missing, please indicate that it is missing.
 Output result as python json object with the fields listed above.
 '''
-
+#run from command line: flask --app webapp run
 #curl -X POST -F "image=@./images/IMG_0211.jpg" -v http://127.0.0.1:5000/submit-receipt
 @app.route('/submit-receipt', methods=['POST'])
 def upload_image():
-    print("in upload_image")
+    app.logger.info("submit-receipt has been called....")
     
     if 'image' not in request.files:
         return jsonify(error='No image file uploaded'), 400
@@ -68,6 +72,7 @@ def upload_image():
         summary = summarize_text(extracted_text)
         print(summary)
         #return jsonify(success='Image loaded successfully'), 200
+        app.logger.info("submit-receipt has been finished....")
         return (summary), 200
     
     except Exception as e:
@@ -75,6 +80,7 @@ def upload_image():
 
 
 def extract_text_from_image(file):
+    app.logger.info("extract_text_from_image has been called....")
     file.stream.seek(0)  # Reset file pointer to the beginning
     # Call Azure OCR API
     result = client.recognize_printed_text_in_stream(file)  
@@ -87,12 +93,14 @@ def extract_text_from_image(file):
                     #print(word.text)
                     '''
     bag_of_words = [word.text for region in result.regions for line in region.lines for word in line.words]
+    app.logger.info("extract_text_from_image has been finished....")
     return " ".join(bag_of_words)
 
 ...
                    
     
 def summarize_text(text):
+    app.logger.info("summarize_text has been called....")
     if text == "":
         return "No text to summarize."
     
@@ -103,6 +111,7 @@ def summarize_text(text):
     answer = openai.ChatCompletion.create(engine=OPENAI_DEPLOYMENT_NAME,
 
                                       messages=messages,)
+    app.logger.info("summarize_text has been finished....")
     return    answer.choices[0].message.content
     
 if __name__ == '__main__':
