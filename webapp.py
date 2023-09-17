@@ -72,7 +72,7 @@ def upload_image():
         summary = summarize_text(extracted_text)
         print(summary)
         #return jsonify(success='Image loaded successfully'), 200
-        app.logger.info("submit-receipt has been finished....")
+        app.logger.info("submit-receipt has been finished...")
         return (summary), 200
     
     except Exception as e:
