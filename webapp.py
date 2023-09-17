@@ -84,14 +84,6 @@ def extract_text_from_image(file):
     file.stream.seek(0)  # Reset file pointer to the beginning
     # Call Azure OCR API
     result = client.recognize_printed_text_in_stream(file)  
-    '''
-    bag_of_words = []
-    for region in result.regions:
-            for line in region.lines:
-                for word in line.words:
-                    bag_of_words.append(word.text) 
-                    #print(word.text)
-                    '''
     bag_of_words = [word.text for region in result.regions for line in region.lines for word in line.words]
     app.logger.info("extract_text_from_image has been finished....")
     return " ".join(bag_of_words)
