@@ -53,7 +53,7 @@ Output result as python json object with the fields listed above.
 #curl -X POST -F "image=@./images/IMG_0211.jpg" -v http://127.0.0.1:5000/submit-receipt
 @app.route('/submit-receipt', methods=['POST'])
 def upload_image():
-    app.logger.info("submit-receipt has been called....")
+    app.logger.info("submit-receipt has been called...==>")
     
     if 'image' not in request.files:
         return jsonify(error='No image file uploaded'), 400
